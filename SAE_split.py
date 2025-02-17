@@ -203,11 +203,13 @@ def balance_split(
     E = torch.tensor(E).to(device)
     E = E / torch.sum(E)
     K = len(bins) - 1
+    bins_arr = bins
     bins = torch.tensor(bins).to(device)
     bins[-1] += eps
     C = (bins[1 :] + bins[: -1]) / 2
     # sigmas = torch.tensor([sigma] * K).to(device)  # constant value
     sigmas = (bins[1 :] - bins[: -1]) * sigma
+    S_arr = S
     S = torch.tensor(S).to(device)
     # build cooper
     cmp_ = MaximumBalance(
@@ -236,16 +238,17 @@ def balance_split(
             bins_info = ''
             R = cmp_.R.detach().cpu().numpy()
             R_hist = []
-            hard_R = np.max((1 - W).reshape(1, -1) * S.cpu().numpy(), axis=1)
+            hard_R = np.max((1 - W).reshape(1, -1) * S_arr, axis=1)
             hard_R_hist = []
             part_res = np.argpartition(W, num_train_mols)
-            real_R = np.max(S.cpu().numpy()[inds[part_res[num_train_mols :]]][:, inds[part_res[: num_train_mols]]], axis=1)
+            real_R = np.max(S_arr[inds[part_res[num_train_mols :]]][:, inds[part_res[: num_train_mols]]], axis=1)
             real_R_hist = []
-            for bin_left, bin_right in zip(bins.cpu().tolist(), bins[1 :].cpu().tolist() + [np.inf]):
+            for bin_left, bin_right in zip(bins_arr, bins_arr[1 :] + [np.inf]):
                 bins_info += f' [{bin_left:.2f}, {bin_right:.2f}]'
                 R_hist.append(round(np.sum(W * (R >= bin_left) * (R < bin_right)), 1))
                 hard_R_hist.append(round(np.sum(W * (hard_R >= bin_left) * (hard_R < bin_right)), 1))
                 real_R_hist.append(round(np.sum((real_R >= bin_left) * (real_R < bin_right)), 1))
+            real_R_hist[-2] += real_R_hist[-1]
             real_R_hist = real_R_hist[: -1]
             #
             score = -np.mean(np.abs(np.array(real_R_hist) / num_test_mols - E.cpu().numpy()))

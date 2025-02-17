@@ -32,9 +32,7 @@ def main(data_dir, train_files, test_files, save_path):
     assert S.shape[1] == len(train_smis)
     max_sim_list = np.max(S, axis=1)  # shape = (#test_smis, )
     # Plot
-    num_bins = 3
-    bins = [round(item / num_bins, 2) for item in np.arange(num_bins + 1).astype(np.float32)]
-    print(bins)
+    bins = [0, 1 / 3, 2 / 3, 1.01]
     bin_counts = []
     for bin_left, bin_right in zip(bins[: -1], bins[1 :]):
         bin_counts.append(np.sum((max_sim_list >= bin_left) * (max_sim_list < bin_right)))
@@ -44,7 +42,7 @@ def main(data_dir, train_files, test_files, save_path):
     plt.title(f'Train: {S.shape[0]} Test: {S.shape[1]} Bins: {bin_counts}')
     plt.hist(
         max_sim_list,
-        bins=np.linspace(0, 1, num_bins + 1),
+        bins=bins,
         # cumulative=True, density=True, histtype='step'
     )
     plt.savefig(save_path)
