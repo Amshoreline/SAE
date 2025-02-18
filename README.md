@@ -1,15 +1,19 @@
-# Rethinking the generalization of drug target affinity prediction algorithms via similarity aware evaluation
+# Similarity Aware Evaluation (SAE)
 
-[OpenReview link](https://openreview.net/forum?id=j7cyANIAxV)
+[ICLR 2025 Oral](https://openreview.net/forum?id=j7cyANIAxV)
 
 ## Introduction
-
+Similarity Aware Evaluation (SAE) is a framework that optimizes train-test splits via gradient descent to enforce customizable similarity distributions.
 
 ## Requirements
 ```bash
 python >= 3.7
 torch >= 1.11
 rdkit >= 2023.3.1
+pandas
+numpy
+seaborn
+matplotlib
 ```
 
 ## Quick start

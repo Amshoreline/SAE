@@ -276,7 +276,7 @@ def balance_split(
             )
     part_res, *other_res_list = best_res
     return (
-        table.loc[inds[part_res[: num_train_mols]]],  # train+val table
+        table.loc[inds[part_res[: num_train_mols]]],  # train table
         table.loc[inds[part_res[num_train_mols :]]],  # test table
         *other_res_list
     )
@@ -328,14 +328,12 @@ def main(dataset_path=sys.argv[1], save_dir=sys.argv[2]):
         param_dict = group_dict.copy()
         if 'repeat_ind' in param_dict:
             del param_dict['repeat_ind']
-        # *train/val+test split*
+        # *train/test split*
         train_table, test_table, loss_list, test_count, W, real_R, real_R_hist, hist_score = balance_split(
             data_table, S, test_ratio,
             **param_dict,
         )
         print(f'\tbest real_R:\t{real_R_hist}')
-        # train/val split, stratified sampling
-        num_vals = int(len(data_table) * (1 - test_ratio)) - int(len(data_table) * (1 - test_ratio))
         # save dataset
         str_group_dict = []
         for key, value in group_dict.items():
