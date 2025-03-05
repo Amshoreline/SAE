@@ -43,14 +43,13 @@ demo_output/
 - **info.csv**: Contains metadata or additional information about the dataset split.
 - **W.npy**: The resulting weight matrix.
 - **real_R.npy**: The real-valued matrix generated during the splitting.
-- **sim.png**: A visualization of the similarity matrix or related data.
 - **test.csv**: The resulting test set.
 - **train.csv**: The resulting training set.
 - **viz_W.png**: A visual representation of the weight matrix.
-- **viz_real_R.png**: A visual representation of the real-valued matrix.
+- **viz_real_R.png**: A visual representation of the similarity matrix.
 
-## Grid-search for data spiltting
-Coming soon.
+## Grid-search for data splitting
+Coming soon. (If you are in a hurry, please email chenbinzhang@moleculemind.com)
 
 ## Cite
 If you use this code in your research, please cite the following paper:
