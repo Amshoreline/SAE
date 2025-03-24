@@ -1,0 +1,16 @@
+dataset_path: demo_input/IC50_EGFR.csv
+save_dir: demo_output/IC50_EGFR/
+test_ratio: 0.2
+hyper_param_dict:
+    'sigmoid': [True, ]
+    'base_lr': [1e-2, ]
+    'optim_kind': ['ExtraAdam', ]
+    'sched_kind': ['CosineAnnealing', ]
+    'init_kind': ['custom', ]
+    'lamb': [2.03091762e-03, ]
+    'sigma': [0.1, ]
+    'scale_factor': [100, ]
+    'bins': [[0, 1 / 3, 2 / 3, 1.0], ]
+    'seed': [233, ]
+    'init_scale': [5, ]
+    'max_iters': [20000, ]

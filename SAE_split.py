@@ -4,6 +4,9 @@ import sys
 import time
 import itertools
 import random
+import hashlib
+import omegaconf
+from omegaconf import OmegaConf
 # torch,pandas,numpy
 import torch
 import torch.nn.functional as F
@@ -190,10 +193,14 @@ def balance_split(
     N = len(table)
     num_train_mols = int((1 - alpha) * N)
     num_test_mols = N - num_train_mols
-    if isinstance(bins, tuple):
+    if isinstance(bins[0], omegaconf.listconfig.ListConfig):
         bins, E = bins
     else:
         E = [1] * (len(bins) - 1)
+    bins = [
+        eval(bin) if isinstance(bin, str) else bin
+        for bin in bins
+    ]
     if bins[0] > (0 + eps):
         bins = [0] + bins
         E.insert(0, 0)
@@ -283,10 +290,14 @@ def balance_split(
 
 
 
-def main(dataset_path=sys.argv[1], save_dir=sys.argv[2]):
-    test_ratio = 0.2
+def main(config_path=sys.argv[1]):
+    config = OmegaConf.load(config_path)
+    dataset_path = config['dataset_path']
+    save_dir = config['save_dir']
+    test_ratio = config['test_ratio']
+    hyper_param_dict = config['hyper_param_dict']
     #
-    print(dataset_path)
+    print(f'From {dataset_path} to {save_dir}')
     end_time = time.time()
     #
     data_table = pd.read_csv(dataset_path, header=None)
@@ -295,22 +306,6 @@ def main(dataset_path=sys.argv[1], save_dir=sys.argv[2]):
     #
     dataset_name = os.path.basename(dataset_path).replace('.csv', '')
     print('Time consuming for similarity matrix is:', int(time.time() - end_time))
-    # balance split
-    hyper_param_dict = {
-        'sigmoid': [True, ],
-        'base_lr': [1e-2, ],
-        'optim_kind': ['ExtraAdam', ],
-        'sched_kind': ['CosineAnnealing', ],
-        'init_kind': ['custom', ],
-        'lamb': [2.03e-03, ],
-        'sigma': [0.1, ],
-        'scale_factor': [100, ],
-        'bins': [[0, 1 / 3, 2 / 3, 1.0], ],
-        'seed': [233, ],
-        'init_scale': [5, ],
-        'max_iters': [20000, ],
-        # 'repeat_ind': range(16), 
-    }
     # prepare info_table
     info_table = {
         'dirname': [],
@@ -326,8 +321,6 @@ def main(dataset_path=sys.argv[1], save_dir=sys.argv[2]):
         print()
         print(group_dict)
         param_dict = group_dict.copy()
-        if 'repeat_ind' in param_dict:
-            del param_dict['repeat_ind']
         # *train/test split*
         train_table, test_table, loss_list, test_count, W, real_R, real_R_hist, hist_score = balance_split(
             data_table, S, test_ratio,
@@ -338,7 +331,9 @@ def main(dataset_path=sys.argv[1], save_dir=sys.argv[2]):
         str_group_dict = []
         for key, value in group_dict.items():
             str_key = key.replace('_', '-')
-            if key in ['lamb', 'base_lr']:
+            if key == 'bins':
+                str_value = hashlib.md5(str(value).encode()).hexdigest()
+            elif key in ['lamb', 'base_lr']:
                 str_value = f'{value:.2e}'
             elif isinstance(value, float):
                 str_value = f'{value:.2f}'
@@ -349,8 +344,8 @@ def main(dataset_path=sys.argv[1], save_dir=sys.argv[2]):
             else:
                 str_value = str(value)
             str_group_dict.append(f'{str_key}-{str_value}')
-        dirname = '_'.join(str_group_dict)
-        data_dir = f'{save_dir}/{dataset_name}/{dirname}'
+        dirname = ('_'.join(str_group_dict)).replace(' ', '').replace('/', '_')
+        data_dir = f'{save_dir}/{dirname}'
         print('\tSave results to', dirname)
         os.makedirs(data_dir, exist_ok=True)
         train_table.to_csv(f'{data_dir}/train.csv', index=False, header=False)
@@ -379,7 +374,7 @@ def main(dataset_path=sys.argv[1], save_dir=sys.argv[2]):
         plt.savefig(f'{data_dir}/viz_real_R.png')
         plt.close('all')
         np.save(f'{data_dir}/real_R.npy', real_R)
-        pd.DataFrame(info_table).to_csv(f'{save_dir}/{dataset_name}/info.csv')                        
+        pd.DataFrame(info_table).to_csv(f'{save_dir}/info.csv')
 
 
 if __name__ == '__main__':

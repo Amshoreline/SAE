@@ -1,0 +1,27 @@
+dataset_path: demo_input/IC50_EGFR.csv
+save_dir: debug/IC50_EGFR_mimic/
+test_ratio: 0.2
+hyper_param_dict:
+    'sigmoid': [True, False]
+    'base_lr': [1e-2, ]
+    'optim_kind': ['ExtraAdam', ]
+    'sched_kind': ['CosineAnnealing', ]
+    'init_kind': ['uniform', 'custom', 'normal']
+    'lamb': [
+       1.00000000e-03, 1.26638017e-03, 1.60371874e-03, 2.03091762e-03,
+       2.57191381e-03, 3.25702066e-03, 4.12462638e-03, 5.22334507e-03,
+       6.61474064e-03, 8.37677640e-03, 1.06081836e-02, 1.34339933e-02,
+       1.70125428e-02, 2.15443469e-02, 2.72833338e-02, 3.45510729e-02,
+       4.37547938e-02, 5.54102033e-02, 7.01703829e-02, 8.88623816e-02
+    ]
+    'sigma': [0.1, 0.3]
+    'scale_factor': [100, ]
+    'bins': [
+        [
+            [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+            [0, 6, 36, 119, 247, 460, 271, 129, 52, 12]
+        ],
+    ]
+    'seed': [233, ]
+    'init_scale': [5, ]
+    'max_iters': [20000, ]
