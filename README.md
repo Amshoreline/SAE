@@ -87,7 +87,7 @@ The `bins` have two configuration options:
 
 1. **Without Assigning Weights to Each Bin**: For example, to achieve a balanced split as described in the paper, such as "[0, 1/3, 2/3, 1]", we can set `bins` as `'bins': [[0, 1 / 3, 2 / 3, 1.0], ]` or `'bins': [[0, 0.33333, 0.66666, 1.0], ]`. For a "0.4-0.6" split, where the test distribution is expected to have its maximum similarity in the range between 0.4 and 0.6, we can configure `bins` as `'bins': [[0.4, 0.6], ]`.
 
-2. **With Assigning Weights to Each Bin**: For a mimic split as discussed in the paper, we first calculate the bin count of the external test set. Then, we can configure `bins` as follows:
+2. **With Assigning Weights to Each Bin**: For a mimic split as discussed in the paper, we first calculate the bin count of the external test set. Then, we can configure `bins` as follows: (`SAE_split.py` only focuses on the relative sizes of these bin counts, so it does not require the sum of bin counts to exactly match the size of the test set.)
     ```yaml
     'bins': [
         [
